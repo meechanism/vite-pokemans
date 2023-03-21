@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './PokemonList.css';
+import { PokemonOption } from './PokemonTypes';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const MAX_POKEMON = 1281;
@@ -10,19 +11,6 @@ enum SORT_TYPE {
   ID,
   NAME
 }
-type PokemonOption = {
-  name: string;
-  url: string;
-  id: number;
-};
-
-type Pokemon = {
-  name: string;
-  id: number;
-  sprite: string;
-  weight: number;
-  height: number;
-};
 
 const normalize = (name: string) => {
   if (name.length === 0) return name;
@@ -76,18 +64,6 @@ function App() {
     else setSortType(SORT_TYPE.ID);
   };
 
-  useEffect(() => {
-    console.log('Sort our pokemons: ', sortType);
-
-    if (sortType === SORT_TYPE.NAME) {
-      const newList = allPokemon.sort((a, b) => (a.name > b.name ? 1 : -1));
-      setRenderedPokemon(newList);
-    } else if (sortType === SORT_TYPE.ID) {
-      const newList = allPokemon.sort((a, b) => (a.id > b.id ? 1 : -1));
-      setRenderedPokemon(newList);
-    }
-  }, [sortType, allPokemon]);
-
   const prevClick = () => {
     if (page > 0) {
       setPage(page - 1);
@@ -98,6 +74,16 @@ function App() {
     if (page <= MAX_POKEMON) {
       setPage(page + 1);
     }
+  };
+
+  const sort = (list: PokemonOption[]) => {
+    let newList: PokemonOption[] = [];
+    if (sortType === SORT_TYPE.NAME) {
+      newList = list.sort((a, b) => (a.name > b.name ? 1 : -1));
+    } else if (sortType === SORT_TYPE.ID) {
+      newList = list.sort((a, b) => (a.id > b.id ? 1 : -1));
+    }
+    return newList;
   };
 
   return (
@@ -120,7 +106,7 @@ function App() {
             </tr>
           </thead>
           <tbody>
-            {renderedPokemon.map((p: PokemonOption, i) => (
+            {sort(allPokemon).map((p: PokemonOption, i) => (
               <tr key={`p-${i}`}>
                 <td>{p.id}</td>
                 <td>
