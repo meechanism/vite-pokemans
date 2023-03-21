@@ -1,12 +1,8 @@
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import './PokemonSelect.css';
 
 const API_URL = import.meta.env.VITE_API_URL;
-
-type PokemonOption = {
-  name: string;
-  url: string;
-};
 
 type Pokemon = {
   name: string;
@@ -30,31 +26,14 @@ const getPID = (str: string): number => {
 };
 
 function App() {
+  const { id } = useParams();
   const [loading, setLoading] = useState(false);
-  const [allPokemon, setAllPokemon] = useState<PokemonOption[]>([]);
-  const [selected, setSelected] = useState<number>();
   const [pokemon, setPokemon] = useState<Pokemon>();
 
   useEffect(() => {
-    // fetch and store our pokemon
-    const fetchAllPokemon = async () => {
-      const resp = await fetch(`${API_URL}/api/v2/pokemon/`);
-      const data = await resp.json();
-      const all = data.results.map((p: any) => {
-        return { ...p, name: normalize(p.name) };
-      });
-      setAllPokemon(all);
-      setLoading(false);
-    };
-
-    fetchAllPokemon();
-    setLoading(true);
-  }, []);
-
-  useEffect(() => {
     // Pull pokemon info for selected
-    const fetchPokemon = async (pid: number) => {
-      const resp = await fetch(`${API_URL}/api/v2/pokemon/${pid}`);
+    const fetchPokemon = async () => {
+      const resp = await fetch(`${API_URL}/api/v2/pokemon/${id}`);
       const data = await resp.json();
       setPokemon({
         name: normalize(data.name),
@@ -66,34 +45,15 @@ function App() {
       setLoading(false);
     };
 
-    if (selected) {
-      fetchPokemon(selected);
-      setLoading(true);
-    }
-  }, [selected]);
-
-  const handleSelectPokemon = (e: any) => {
-    // extract id
-    const url = e.target.value;
-    const pid = getPID(url);
-    setSelected(pid);
-  };
+    fetchPokemon();
+    setLoading(true);
+  }, []);
 
   return (
     <div className="App">
       <h1>Pokemon Selector</h1>
 
-      <select
-        disabled={loading}
-        onChange={handleSelectPokemon}
-        // control the state
-        value={pokemon ? pokemon.id : undefined}>
-        {allPokemon.map((p: PokemonOption, i) => (
-          <option value={getPID(p.url)} key={`p-${i}`}>
-            {p.name}
-          </option>
-        ))}
-      </select>
+      {loading ? 'Loading...' : ''}
 
       {pokemon && (
         <div className="pokemon">

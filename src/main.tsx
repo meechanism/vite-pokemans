@@ -14,7 +14,7 @@ const router = createBrowserRouter([
   },
 
   {
-    path: '/select',
+    path: '/select/:id',
     element: <PokemonSelect />
   },
 

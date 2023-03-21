@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import './PokemonList.css';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -6,8 +7,8 @@ const MAX_POKEMON = 1281;
 const LIMIT = 50;
 
 enum SORT_TYPE {
-  NAME,
-  ID
+  ID,
+  NAME
 }
 type PokemonOption = {
   name: string;
@@ -71,7 +72,6 @@ function App() {
   }, [page]);
 
   const sortList = () => {
-    if (sortType === undefined) setSortType(SORT_TYPE.NAME);
     if (sortType === SORT_TYPE.ID) setSortType(SORT_TYPE.NAME);
     else setSortType(SORT_TYPE.ID);
   };
@@ -123,7 +123,9 @@ function App() {
             {renderedPokemon.map((p: PokemonOption, i) => (
               <tr key={`p-${i}`}>
                 <td>{p.id}</td>
-                <td>{p.name}</td>
+                <td>
+                  <Link to={`/select/${p.id}`}>{p.name}</Link>
+                </td>
               </tr>
             ))}
           </tbody>
